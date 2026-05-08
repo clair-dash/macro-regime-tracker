@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macro Regime Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <style>
+    :root {
+      --bg: #0F1117; --bg2: #161923; --card: #1C2030; --border: #2A3048;
+      --gold: #C9A84C; --teal: #2EBFBF; --white: #E8EAF0; --muted: #6B7394;
+      --green: #34D399; --red: #F87171; --amber: #FBBF24; --text-dim: #545B78;
+      --row-alt: rgba(255,255,255,.02);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--white);
+           font-family: 'DM Sans', -apple-system, sans-serif;
+           line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .dash { max-width: 1400px; margin: 0 auto; padding: 20px 24px 40px; }
+    .header { display: flex; align-items: baseline; justify-content: space-between;
+              flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+    .header h1 { font-size: 22px; font-weight: 800; letter-spacing: 5px; }
+    .header-ts { font-size: 11px; color: var(--muted); }
+    .subtitle { font-size: 11px; color: var(--text-dim); margin-bottom: 20px; }
+    .section-divider { height: 1px; background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+                       margin: 24px 0 4px; opacity: .4; }
+    .section-title { font-size: 16px; font-weight: 800; letter-spacing: 3px; margin: 20px 0 10px; }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .card { background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 12px 16px; overflow: hidden; }
+    .card-title { font-size: 11px; font-weight: 700; color: var(--gold);
+                  letter-spacing: .4px; margin-bottom: 10px; }
+    .card-source { font-size: 9px; color: var(--text-dim); margin-top: 8px; font-style: italic; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .badge { display: inline-block; font-size: 9px; font-weight: 700;
+             padding: 2px 8px; border-radius: 10px; letter-spacing: .5px; }
+    .badge-accelerating { background: rgba(251,191,36,.15); color: var(--amber); }
+    .badge-stable       { background: rgba(46,191,191,.12); color: var(--teal); }
+    .badge-decelerating { background: rgba(255,255,255,.06); color: var(--muted); }
+    .badge-low      { background: rgba(52,211,153,.12);  color: var(--green); }
+    .badge-neutral  { background: rgba(255,255,255,.06); color: var(--muted); }
+    .badge-elevated { background: rgba(248,113,113,.12); color: var(--red); }
+    .badge-supportive { background: rgba(52,211,153,.12);  color: var(--green); }
+    .badge-headwind   { background: rgba(248,113,113,.12); color: var(--red); }
+    .badge-unknown    { background: rgba(255,255,255,.06); color: var(--muted); }
+    .stale-warning { background: rgba(251,191,36,.1); border: 1px solid rgba(251,191,36,.3);
+                     border-radius: 8px; padding: 8px 14px; font-size: 11px;
+                     color: var(--amber); margin-bottom: 12px; display: none; }
+    /* Macro Regime rows */
+    .regime-row { display: flex; align-items: center; justify-content: space-between;
+                  padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .regime-row:last-child { border-bottom: none; }
+    .regime-label { font-size: 11px; color: var(--muted); font-weight: 600;
+                    width: 90px; flex-shrink: 0; }
+    .regime-value { font-size: 18px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+                    width: 80px; text-align: right; flex-shrink: 0; }
+    .regime-spark { width: 80px; height: 24px; flex-shrink: 0; }
+    /* Radar cards */
+    .radar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .radar-card { background: var(--bg2); border: 1px solid var(--border);
+                  border-radius: 8px; padding: 12px; text-align: center; }
+    .radar-label { font-size: 10px; color: var(--muted); font-weight: 600;
+                   letter-spacing: .3px; margin-bottom: 6px; }
+    .radar-value { font-size: 26px; font-weight: 800;
+                   font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+    .footer { font-size: 9px; color: var(--text-dim); margin-top: 24px;
+              padding-top: 12px; border-top: 1px solid var(--border); }
+    @media(max-width: 900px) {
+      .g2 { grid-template-columns: 1fr; }
+      .radar-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 600px) {
+      .dash { padding: 12px 12px 28px; }
+      .header h1 { font-size: 16px; }
+      .radar-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="dash">
+  <div class="stale-warning" id="staleWarn"></div>
+  <div class="header">
+    <h1>MACRO REGIME TRACKER</h1>
+    <span class="header-ts mono" id="headerTs">Loading…</span>
+  </div>
+  <div class="subtitle">Inflation · Liquidity · Rates · Gold Positioning · Family Office Intelligence</div>
+
+  <!-- PANELS injected by JS -->
+  <div id="panels"></div>
+
+  <div class="footer">
+    Sources: FRED (St. Louis Fed) · Yahoo Finance · US Treasury · SNB ·
+    Regime: 3-month rate-of-change threshold · Refreshes hourly
+  </div>
+</div>
+
+<script>
+// ─── Utilities ──────────────────────────────────────────────────────────────
+const fmt = (v, dec=2) => v == null ? '—' : (+v).toFixed(dec);
+const fmtPct = v => v == null ? '—' : (v > 0 ? '+' : '') + (+v).toFixed(1) + '%';
+const ts = d => { try { const dt = new Date(d); return 'as of ' +
+  dt.toLocaleDateString(undefined, {day:'numeric',month:'short',year:'numeric'}) + ' ' +
+  dt.toLocaleTimeString(undefined, {hour:'2-digit',minute:'2-digit'}); } catch(e) { return ''; } };
+
+function badge(state, label) {
+  return `<span class="badge badge-${state}">${label || state.toUpperCase()}</span>`;
+}
+
+function directionArrow(d) {
+  return d === 'accelerating' ? '▲' : d === 'decelerating' ? '▼' : '►';
+}
+
+function sparklineSvg(values, color) {
+  if (!values || values.length < 2) return '';
+  const w = 80, h = 24;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const pts = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * w;
+    const y = h - ((v - min) / range) * (h - 2) - 1;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `<svg width="${w}" height="${h}" style="display:block">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function sparkColor(direction) {
+  return direction === 'accelerating' ? '#FBBF24'
+       : direction === 'decelerating' ? '#6B7394'
+       : '#2EBFBF';
+}
+
+const PLOTLY_LAYOUT = {
+  paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+  font: { family: "'DM Sans', sans-serif", color: '#6B7394', size: 10 },
+  margin: { t: 10, r: 10, b: 40, l: 50 },
+  legend: { bgcolor: 'transparent', font: { size: 9 } },
+  xaxis: { gridcolor: '#2A3048', linecolor: '#2A3048', tickfont: { size: 9 } },
+  yaxis: { gridcolor: '#2A3048', linecolor: '#2A3048', tickfont: { size: 9 } },
+};
+
+// ─── Panel Renderers ────────────────────────────────────────────────────────
+
+function renderMacroRegime(D) {
+  const rows = [
+    { key: 'inflation', label: 'CPI YoY',   unit: '%' },
+    { key: 'pce',       label: 'PCE YoY',   unit: '%' },
+    { key: 'liquidity', label: 'M2 YoY',    unit: '%' },
+    { key: 'fed_bs',    label: 'Fed BS',    unit: 'T' },
+    { key: 'real_yield',label: 'Real Yield', unit: '%' },
+  ];
+  let html = '';
+  for (const {key, label, unit} of rows) {
+    const e = D[key] || {};
+    const dir = e.direction || 'stable';
+    const val = e.value != null ? fmt(e.value, 1) + unit : '—';
+    const spark = sparklineSvg(e.sparkline, sparkColor(dir));
+    html += `<div class="regime-row">
+      <span class="regime-label">${label}</span>
+      ${badge(dir, directionArrow(dir) + ' ' + dir.toUpperCase())}
+      <span class="regime-value mono">${val}</span>
+      <span class="regime-spark">${spark}</span>
+    </div>`;
+  }
+  return `<div class="card">
+    <div class="card-title">MACRO REGIME</div>
+    ${html}
+    <div class="card-source">FRED: CPIAUCSL · PCEPI · M2SL · WALCL · DFII10</div>
+  </div>`;
+}
+
+function renderGoldPositioning(D) {
+  const gold = D.gold || {};
+  const dxy = gold.dxy || {};
+  const dxyVal = dxy.value != null ? fmt(dxy.value, 2) : '—';
+  const dxyRet = dxy.returns || {};
+  const ret = gold.returns || {};
+  const retChf = gold.returns_chf || {};
+
+  const bm = (D.yield_curve || {}).benchmarks || {};
+  const usd10y = ((D.yield_curve || {}).today || {})['10Y'];
+
+  return `<div class="card">
+    <div class="card-title">GOLD POSITIONING</div>
+    <div id="goldChart" style="height:200px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px">
+        <div style="font-size:10px;color:var(--muted);font-weight:600">GOLD USD</div>
+        <div class="mono" style="font-size:22px;font-weight:800">$${fmt(gold.price_usd, 0)}</div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:4px">
+          1W ${fmtPct(ret.w1)} · 1M ${fmtPct(ret.m1)} · YTD ${fmtPct(ret.ytd)} · 1Y ${fmtPct(ret.y1)}
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px">
+        <div style="font-size:10px;color:var(--muted);font-weight:600">GOLD CHF</div>
+        <div class="mono" style="font-size:22px;font-weight:800">CHF ${fmt(gold.price_chf, 0)}</div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:4px">
+          1W ${fmtPct(retChf.w1)} · 1M ${fmtPct(retChf.m1)} · YTD ${fmtPct(retChf.ytd)} · 1Y ${fmtPct(retChf.y1)}
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px">
+        <div style="font-size:10px;color:var(--muted);font-weight:600">DXY</div>
+        <div class="mono" style="font-size:22px;font-weight:800">${dxyVal}</div>
+        <div style="margin-top:4px">${badge(dxy.signal || 'neutral', (dxy.signal || 'neutral').toUpperCase())}</div>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:4px">
+          1M ${fmtPct(dxyRet.m1)} · YTD ${fmtPct(dxyRet.ytd)}
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;margin-bottom:6px">10Y BENCHMARKS</div>
+        <div id="bmChart" style="height:80px"></div>
+      </div>
+    </div>
+    <div class="card-source">Source: Yahoo Finance (GC=F · USDCHF=X) · FRED (DFII10) · SNB · ECB</div>
+  </div>`;
+}
+
+function renderYieldCurve(D) {
+  return `<div class="card" style="grid-column:span 2">
+    <div class="card-title">US YIELD CURVE</div>
+    <div id="curveChart" style="height:220px"></div>
+    <div class="card-source">Source: US Treasury · EUR=German Bund · GBP=UK Gilt · CHF=Swiss Confederation</div>
+  </div>`;
+}
+
+function renderDeploymentRadar(D) {
+  const items = [
+    { key: 'hy_spread',    label: 'HY SPREAD',    dec: 0, unit: 'bp' },
+    { key: 'ig_spread',    label: 'IG SPREAD',    dec: 0, unit: 'bp' },
+    { key: 'vix',          label: 'VIX',           dec: 1, unit: '' },
+    { key: 'spx_vs_200ma', label: 'SPX vs 200MA', dec: 1, unit: '%' },
+  ];
+  let html = '';
+  for (const {key, label, dec, unit} of items) {
+    const e = D[key] || {};
+    const val = e.value != null ? fmt(e.value, dec) + unit : '—';
+    const signalColor = e.signal === 'low' ? 'var(--green)'
+                       : e.signal === 'elevated' ? 'var(--red)' : 'var(--muted)';
+    html += `<div class="radar-card">
+      <div class="radar-label">${label}</div>
+      <div class="radar-value mono" style="color:${signalColor}">${val}</div>
+      ${badge(e.signal || 'neutral')}
+    </div>`;
+  }
+  return `<div class="card" style="grid-column:span 2">
+    <div class="card-title">DEPLOYMENT RADAR</div>
+    <div class="radar-grid" style="margin-top:8px">${html}</div>
+    <div class="card-source">Source: FRED (BAMLH0A0HYM2 · BAMLC0A0CM) · Yahoo Finance (^VIX · ^GSPC)</div>
+  </div>`;
+}
+
+// ─── Plotly Charts ──────────────────────────────────────────────────────────
+
+function drawGoldChart(gold) {
+  const ryHist = gold.real_yield_history || [];
+  const gHist  = gold.gold_price_history || [];
+  const n = Math.min(ryHist.length, gHist.length);
+  if (n < 2) return;
+  const labels = Array.from({length: n}, (_, i) => i);
+
+  Plotly.newPlot('goldChart', [
+    { x: labels, y: ryHist.slice(-n), name: 'Real Yield (TIPS %)',
+      yaxis: 'y', line: { color: '#2EBFBF', width: 1.5 } },
+    { x: labels, y: gHist.slice(-n),  name: 'Gold (USD)',
+      yaxis: 'y2', line: { color: '#C9A84C', width: 1.5 } },
+  ], {
+    ...PLOTLY_LAYOUT,
+    yaxis:  { ...PLOTLY_LAYOUT.yaxis, title: { text: 'Real Yield %', font: { size: 9 } } },
+    yaxis2: { ...PLOTLY_LAYOUT.yaxis, title: { text: 'Gold USD', font: { size: 9 } },
+              overlaying: 'y', side: 'right' },
+    showlegend: true,
+    legend: { bgcolor: 'transparent', font: { size: 9 }, orientation: 'h', y: -0.2 },
+  }, { responsive: true, displayModeBar: false });
+}
+
+function drawBmChart(benchmarks, usd10y) {
+  const keys = ['USD', 'EUR', 'GBP', 'CHF'];
+  const vals = [usd10y, benchmarks.EUR, benchmarks.GBP, benchmarks.CHF];
+  Plotly.newPlot('bmChart', [{
+    x: keys, y: vals, type: 'bar',
+    marker: { color: ['#C9A84C', '#2EBFBF', '#60A5FA', '#A78BFA'] },
+    text: vals.map(v => v != null ? v.toFixed(2) + '%' : ''),
+    textposition: 'outside',
+    textfont: { size: 8 },
+  }], {
+    ...PLOTLY_LAYOUT,
+    margin: { t: 5, r: 5, b: 20, l: 30 },
+    xaxis: { ...PLOTLY_LAYOUT.xaxis, tickfont: { size: 8 } },
+    yaxis: { ...PLOTLY_LAYOUT.yaxis, tickfont: { size: 8 }, ticksuffix: '%' },
+    showlegend: false,
+  }, { responsive: true, displayModeBar: false });
+}
+
+function drawCurveChart(yc) {
+  const mats = ['1M','3M','6M','1Y','2Y','3Y','5Y','7Y','10Y','20Y','30Y'];
+  const toArr = obj => mats.map(m => obj ? (obj[m] ?? null) : null);
+  const bm = yc.benchmarks || {};
+
+  Plotly.newPlot('curveChart', [
+    { x: mats, y: toArr(yc.today),      name: 'Today',
+      line: { color: '#C9A84C', width: 2 } },
+    { x: mats, y: toArr(yc['1y_ago']),  name: '1Y Ago',
+      line: { color: '#2EBFBF', width: 1.5, dash: 'dash' } },
+    { x: mats, y: toArr(yc['2y_ago']),  name: '2Y Ago',
+      line: { color: '#6B7394', width: 1.5, dash: 'dot' } },
+    { x: ['10Y', '10Y', '10Y'], y: [bm.EUR, bm.GBP, bm.CHF],
+      mode: 'markers+text', name: 'Intl 10Y',
+      text: ['EUR', 'GBP', 'CHF'], textposition: 'top center',
+      marker: { size: 8, color: ['#60A5FA', '#A78BFA', '#34D399'] },
+      textfont: { size: 8, color: ['#60A5FA', '#A78BFA', '#34D399'] } },
+  ], {
+    ...PLOTLY_LAYOUT,
+    showlegend: true,
+    legend: { bgcolor: 'transparent', font: { size: 9 } },
+    yaxis: { ...PLOTLY_LAYOUT.yaxis, title: { text: 'Yield %', font: { size: 9 } }, ticksuffix: '%' },
+  }, { responsive: true, displayModeBar: false });
+}
+
+// ─── Main Render ────────────────────────────────────────────────────────────
+
+function render(D) {
+  document.getElementById('headerTs').textContent = ts(D.timestamp);
+
+  const staleEl = document.getElementById('staleWarn');
+  const ageH = (Date.now() - new Date(D.timestamp)) / 3600000;
+  if (ageH > 24) {
+    staleEl.style.display = 'block';
+    staleEl.textContent = `⚠ Data is ${ageH.toFixed(0)}h old — last updated ${ts(D.timestamp)}`;
+  }
+
+  const panels = document.getElementById('panels');
+  panels.innerHTML = `
+    <div class="g2">
+      ${renderMacroRegime(D.macro_regime || {})}
+      ${renderGoldPositioning(D)}
+    </div>
+    <div class="g2">
+      ${renderYieldCurve(D)}
+      ${renderDeploymentRadar(D.deployment_radar || {})}
+    </div>
+  `;
+
+  if (D.gold) {
+    drawGoldChart(D.gold);
+    const bm  = (D.yield_curve || {}).benchmarks || {};
+    const u10 = ((D.yield_curve || {}).today || {})['10Y'];
+    drawBmChart(bm, u10);
+  }
+  if (D.yield_curve) drawCurveChart(D.yield_curve);
+}
+
+// ─── Data Loading ───────────────────────────────────────────────────────────
+
+function loadData() {
+  fetch('macro_data.json?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('macro_data.json not found'); return r.json(); })
+    .then(d => render(d))
+    .catch(e => {
+      document.getElementById('headerTs').textContent = 'Error loading data: ' + e.message;
+    });
+}
+
+loadData();
+setInterval(loadData, 60 * 60 * 1000);
+</script>
+</body>
+</html>
