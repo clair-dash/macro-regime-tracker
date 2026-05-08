@@ -73,3 +73,31 @@ RADAR_THRESHOLDS = {
     "vix":           {"low": 20,  "high": 30},
     "spx_vs_200ma":  {"low": -5,  "high": 0},     # % below 200MA → concern
 }
+
+# ─── Shared Utilities ────────────────────────────────────────────────────────
+
+def sanitize(obj):
+    """Recursively replace NaN/Infinity with None for valid JSON."""
+    import math
+    if isinstance(obj, float):
+        return None if (math.isnan(obj) or math.isinf(obj)) else obj
+    if isinstance(obj, dict):
+        return {k: sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize(v) for v in obj]
+    return obj
+
+
+def safe_download(ticker, **kwargs):
+    """yfinance download with 3 retries and MultiIndex column flattening."""
+    for attempt in range(3):
+        try:
+            df = yf.download(ticker, progress=False, auto_adjust=True, **kwargs)
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+            return df
+        except Exception as e:
+            log.warning(f"Attempt {attempt+1} failed for {ticker}: {e}")
+            if attempt == 2:
+                return pd.DataFrame()
+    return pd.DataFrame()
