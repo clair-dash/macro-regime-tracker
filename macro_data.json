@@ -1,28 +1,56 @@
 {
-  "timestamp": "2026-05-08T18:45:40.607694Z",
+  "timestamp": "2026-05-08T19:59:28.382817Z",
   "macro_regime": {
     "inflation": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 3.3202,
+      "direction": "accelerating",
+      "sparkline": [
+        3.0226,
+        2.9883,
+        3.0023,
+        2.8287,
+        2.6646,
+        3.3202
+      ],
       "series": "CPI YoY %"
     },
     "pce": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 3.4961,
+      "direction": "accelerating",
+      "sparkline": [
+        2.7126,
+        2.8202,
+        2.8781,
+        2.8569,
+        2.8296,
+        3.4961
+      ],
       "series": "PCE YoY %"
     },
     "liquidity": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 4.5746,
+      "direction": "accelerating",
+      "sparkline": [
+        4.2809,
+        3.8472,
+        4.0385,
+        4.0895,
+        4.6906,
+        4.5746
+      ],
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": null,
+      "value": 6.71,
       "direction": "stable",
-      "sparkline": [],
+      "sparkline": [
+        6.675,
+        6.694,
+        6.706,
+        6.707,
+        6.7,
+        6.71
+      ],
       "series": "Fed BS $T"
     },
     "real_yield": {
@@ -40,19 +68,19 @@
     }
   },
   "gold": {
-    "price_usd": 4734.5,
-    "price_chf": 3675.87,
+    "price_usd": 4733.5,
+    "price_chf": 3676.98,
     "returns": {
-      "w1": 2.26,
-      "m1": -1.2,
-      "ytd": 9.74,
-      "y1": 43.62
+      "w1": 2.24,
+      "m1": -1.22,
+      "ytd": 9.71,
+      "y1": 43.59
     },
     "returns_chf": {
-      "w1": 1.61,
-      "m1": -3.07,
-      "ytd": 7.58,
-      "y1": 35.34
+      "w1": 1.64,
+      "m1": -3.04,
+      "ytd": 7.61,
+      "y1": 35.38
     },
     "real_yield_history": [
       -0.91,
@@ -1355,16 +1383,16 @@
       4325.6001,
       4713.8999,
       4614.7002,
-      4734.5
+      4733.5
     ],
     "dxy": {
-      "value": 97.893,
+      "value": 97.883,
       "signal": "supportive",
       "returns": {
-        "w1": -0.32,
-        "m1": -0.94,
-        "ytd": -0.54,
-        "y1": -2.73
+        "w1": -0.33,
+        "m1": -0.95,
+        "ytd": -0.55,
+        "y1": -2.74
       }
     }
   },
@@ -1396,12 +1424,12 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 17.4,
+      "value": 17.2,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 9.48,
+      "value": 9.54,
       "signal": "elevated",
       "unit": "%"
     }
@@ -1412,6 +1440,7 @@
       "3M": 3.69,
       "6M": 3.74,
       "1Y": 3.73,
+      "2Y": 3.87,
       "3Y": 3.89,
       "5Y": 3.99,
       "7Y": 4.17,
@@ -1424,6 +1453,7 @@
       "3M": 4.34,
       "6M": 4.28,
       "1Y": 4.05,
+      "2Y": 3.9,
       "3Y": 3.85,
       "5Y": 4.0,
       "7Y": 4.18,
@@ -1436,6 +1466,7 @@
       "3M": 5.45,
       "6M": 5.41,
       "1Y": 5.13,
+      "2Y": 4.84,
       "3Y": 4.63,
       "5Y": 4.5,
       "7Y": 4.49,
