@@ -432,22 +432,16 @@ def parse_treasury_xml(xml_text: str) -> dict:
     """Parse Treasury daily yield curve XML into {maturity: yield} dict."""
     try:
         root = ET.fromstring(xml_text)
-        ns_d = TREASURY_NS['d']
-        ns_m = TREASURY_NS['m']
-        entries = root.findall(f'.//{{{TREASURY_NS["atom"]}}}entry')
-        if not entries:
-            return {}
-        props = entries[-1].find(f'.//{{{ns_m}}}properties')
-        if props is None:
-            return {}
         result = {}
+        # Namespace-agnostic search — Treasury namespace URIs can vary
         for label, field in TREASURY_MATURITIES.items():
-            el = props.find(f'{{{ns_d}}}{field}')
-            if el is not None and el.text:
-                try:
-                    result[label] = float(el.text)
-                except ValueError:
-                    result[label] = None
+            for el in root.iter():
+                if el.tag.endswith(field) and el.text and el.text.strip():
+                    try:
+                        result[label] = float(el.text.strip())
+                    except ValueError:
+                        pass
+                    break
         return result
     except Exception as e:
         log.error(f"Treasury XML parse failed: {e}")
@@ -484,7 +478,7 @@ def build_yield_curve_data() -> dict:
 
     # International 10Y benchmarks
     eur_10y = fetch_fred_latest(FRED_BUND)
-    gbp_10y = yf_latest_price(YF_GBP10Y)
+    gbp_10y = fetch_fred_latest("IRLTLT01GBM156N")
     chf_10y_raw = _fetch_swiss_10y()
 
     return {
@@ -493,7 +487,7 @@ def build_yield_curve_data() -> dict:
         "2y_ago":   two_yr_curve,
         "benchmarks": {
             "EUR": eur_10y,
-            "GBP": round(gbp_10y, 2) if gbp_10y else None,
+            "GBP": round(gbp_10y, 2) if gbp_10y is not None else None,
             "CHF": chf_10y_raw,
         },
     }
@@ -509,7 +503,7 @@ def _fetch_swiss_10y() -> float | None:
                 parts = line.split(";")
                 if len(parts) >= 2:
                     try:
-                        return round(float(parts[-1]), 2)
+                        return round(float(parts[-1].strip().strip('"')), 2)
                     except ValueError:
                         continue
         return None
