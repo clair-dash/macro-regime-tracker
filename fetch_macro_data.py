@@ -516,3 +516,100 @@ def _fetch_swiss_10y() -> float | None:
     except Exception as e:
         log.warning(f"SNB fetch failed: {e}")
         return None
+
+
+# ─── Deployment Radar ────────────────────────────────────────────────────────
+
+def build_deployment_radar() -> dict:
+    """Fetch credit spreads, VIX, and SPX vs 200MA for the Deployment Radar panel."""
+    import math
+
+    hy  = fetch_fred_latest(FRED_HY_OAS)
+    ig  = fetch_fred_latest(FRED_IG_OAS)
+    vix = yf_latest_price(YF_VIX)
+
+    # SPX vs 200-day MA
+    spx_vs_200 = None
+    try:
+        df = safe_download(YF_SPX, period="14mo", interval="1d")
+        if not df.empty and len(df) >= 200:
+            closes = df["Close"].dropna()
+            current = float(closes.iloc[-1])
+            ma200   = float(closes.iloc[-200:].mean())
+            if ma200 > 0 and not math.isnan(ma200):
+                spx_vs_200 = round((current / ma200 - 1) * 100, 2)
+    except Exception as e:
+        log.warning(f"SPX 200MA failed: {e}")
+
+    # Sparklines for spreads (last 6 monthly values)
+    hy_hist = fetch_fred_history(FRED_HY_OAS, lookback_days=LOOKBACK_YEARS * 365)
+    ig_hist = fetch_fred_history(FRED_IG_OAS, lookback_days=LOOKBACK_YEARS * 365)
+
+    return {
+        "hy_spread": {
+            "value":     round(hy, 0) if hy else None,
+            "signal":    assign_radar_signal("hy_spread", hy),
+            "sparkline": build_sparkline(hy_hist),
+            "unit":      "bp",
+        },
+        "ig_spread": {
+            "value":     round(ig, 0) if ig else None,
+            "signal":    assign_radar_signal("ig_spread", ig),
+            "sparkline": build_sparkline(ig_hist),
+            "unit":      "bp",
+        },
+        "vix": {
+            "value":  round(vix, 1) if vix else None,
+            "signal": assign_radar_signal("vix", vix),
+            "unit":   "",
+        },
+        "spx_vs_200ma": {
+            "value":  spx_vs_200,
+            "signal": assign_radar_signal("spx_vs_200ma", spx_vs_200),
+            "unit":   "%",
+        },
+    }
+
+
+# ─── Assembly ────────────────────────────────────────────────────────────────
+
+def build_data() -> dict:
+    """Fetch all sources and assemble macro_data.json payload."""
+    log.info("Building macro regime data...")
+    macro_regime   = build_macro_regime()
+
+    log.info("Building gold positioning data...")
+    gold           = build_gold_data()
+
+    log.info("Building deployment radar data...")
+    radar          = build_deployment_radar()
+
+    log.info("Building yield curve data...")
+    yield_curve    = build_yield_curve_data()
+
+    return {
+        "timestamp":        datetime.utcnow().isoformat() + "Z",
+        "macro_regime":     macro_regime,
+        "gold":             gold,
+        "deployment_radar": radar,
+        "yield_curve":      yield_curve,
+    }
+
+
+def main():
+    try:
+        data = sanitize(build_data())
+        with open(OUTPUT_PATH, "w") as f:
+            json.dump(data, f, indent=2, default=str)
+        log.info(f"Written to {OUTPUT_PATH}")
+        log.info(f"Timestamp: {data['timestamp']}")
+        # Log direction summaries
+        for k, v in data["macro_regime"].items():
+            log.info(f"  {k}: {v.get('value')} → {v.get('direction')}")
+    except Exception as e:
+        log.error(f"Fatal: {e}", exc_info=True)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
