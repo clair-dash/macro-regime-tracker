@@ -284,9 +284,6 @@ function drawBmChart(benchmarks, usd10y) {
   Plotly.newPlot('bmChart', [{
     x: keys, y: vals, type: 'bar',
     marker: { color: ['#C9A84C', '#2EBFBF', '#60A5FA', '#A78BFA'] },
-    text: vals.map(v => v != null ? v.toFixed(2) + '%' : ''),
-    textposition: 'outside',
-    textfont: { size: 8 },
   }], {
     ...PLOTLY_LAYOUT,
     margin: { t: 5, r: 5, b: 20, l: 30 },
@@ -297,26 +294,39 @@ function drawBmChart(benchmarks, usd10y) {
 }
 
 function drawCurveChart(yc) {
-  const mats = ['1M','3M','6M','1Y','2Y','3Y','5Y','7Y','10Y','20Y','30Y'];
-  const toArr = obj => mats.map(m => obj ? (obj[m] ?? null) : null);
+  const allMats = ['1M','3M','6M','1Y','2Y','3Y','5Y','7Y','10Y','20Y','30Y'];
+  const today = yc.today || {};
+  // Only include maturities with data to avoid categorical axis issues
+  const mats = allMats.filter(m => today[m] != null);
+  if (mats.length < 2) return;
+  const toArr = obj => mats.map(m => (obj && obj[m] != null) ? obj[m] : null);
   const bm = yc.benchmarks || {};
 
   Plotly.newPlot('curveChart', [
-    { x: mats, y: toArr(yc.today),      name: 'Today',
+    { x: mats, y: toArr(yc.today),     name: 'Today',
+      type: 'scatter', mode: 'lines', connectgaps: true,
       line: { color: '#C9A84C', width: 2 } },
-    { x: mats, y: toArr(yc['1y_ago']),  name: '1Y Ago',
+    { x: mats, y: toArr(yc['1y_ago']), name: '1Y Ago',
+      type: 'scatter', mode: 'lines', connectgaps: true,
       line: { color: '#2EBFBF', width: 1.5, dash: 'dash' } },
-    { x: mats, y: toArr(yc['2y_ago']),  name: '2Y Ago',
+    { x: mats, y: toArr(yc['2y_ago']), name: '2Y Ago',
+      type: 'scatter', mode: 'lines', connectgaps: true,
       line: { color: '#6B7394', width: 1.5, dash: 'dot' } },
-    { x: ['10Y', '10Y', '10Y'], y: [bm.EUR, bm.GBP, bm.CHF],
-      mode: 'markers+text', name: 'Intl 10Y',
-      text: ['EUR', 'GBP', 'CHF'], textposition: 'top center',
-      marker: { size: 8, color: ['#60A5FA', '#A78BFA', '#34D399'] },
-      textfont: { size: 8, color: ['#60A5FA', '#A78BFA', '#34D399'] } },
+    // One trace per benchmark dot to avoid same-x stacking issue
+    { x: ['10Y'], y: [bm.EUR], name: 'EUR', mode: 'markers+text',
+      text: ['EUR'], textposition: 'top center',
+      marker: { size: 8, color: '#60A5FA' }, textfont: { size: 8, color: '#60A5FA' }, showlegend: false },
+    { x: ['10Y'], y: [bm.GBP], name: 'GBP', mode: 'markers+text',
+      text: ['GBP'], textposition: 'top center',
+      marker: { size: 8, color: '#A78BFA' }, textfont: { size: 8, color: '#A78BFA' }, showlegend: false },
+    { x: ['10Y'], y: [bm.CHF], name: 'CHF', mode: 'markers+text',
+      text: ['CHF'], textposition: 'top center',
+      marker: { size: 8, color: '#34D399' }, textfont: { size: 8, color: '#34D399' }, showlegend: false },
   ], {
     ...PLOTLY_LAYOUT,
     showlegend: true,
-    legend: { bgcolor: 'transparent', font: { size: 9 } },
+    legend: { bgcolor: 'transparent', font: { size: 9 }, orientation: 'h', y: -0.25 },
+    margin: { t: 10, r: 10, b: 60, l: 50 },
     yaxis: { ...PLOTLY_LAYOUT.yaxis, title: { text: 'Yield %', font: { size: 9 } }, ticksuffix: '%' },
   }, { responsive: true, displayModeBar: false });
 }
