@@ -327,6 +327,7 @@ function drawCurveChart(yc) {
     showlegend: true,
     legend: { bgcolor: 'transparent', font: { size: 9 }, orientation: 'h', y: -0.25 },
     margin: { t: 10, r: 10, b: 60, l: 50 },
+    xaxis: { ...PLOTLY_LAYOUT.xaxis, type: 'category' },
     yaxis: { ...PLOTLY_LAYOUT.yaxis, title: { text: 'Yield %', font: { size: 9 } }, ticksuffix: '%' },
   }, { responsive: true, displayModeBar: false });
 }
