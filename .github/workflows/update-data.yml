@@ -1,0 +1,61 @@
+name: Update Macro Regime Data
+
+on:
+  schedule:
+    - cron: '*/6 6-22 * * 1-5'    # Every 6 min, Mon-Fri 06:00-22:00 UTC
+    - cron: '0 7 * * 0,6'          # Once at 07:00 UTC weekends
+  workflow_dispatch:                # Manual trigger
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "data-update"
+  cancel-in-progress: true
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install yfinance requests pandas
+
+      - name: Fetch macro data
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python fetch_macro_data.py
+
+      - name: Commit updated macro_data.json
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add macro_data.json
+          git commit -m "data: update macro regime $(date -u +%Y-%m-%dT%H:%M)" || echo "No changes"
+          git push
+
+  deploy:
+    needs: fetch-data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - run: git pull
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - uses: actions/deploy-pages@v4
