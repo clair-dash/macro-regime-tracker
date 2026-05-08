@@ -54,16 +54,12 @@ YF_USDCHF  = "USDCHF=X"
 YF_GBP10Y  = "^GUKG10"
 
 # Treasury XML namespaces
-TREASURY_NS = {
-    'atom': 'http://www.w3.org/2005/Atom',
-    'd': 'http://schemas.microsoft.com/ado/2007/08/dataservices',
-    'm': 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata',
-}
-TREASURY_MATURITIES = {
-    '1M': 'BC_1MONTH', '3M': 'BC_3MONTH', '6M': 'BC_6MONTH',
-    '1Y': 'BC_1YEAR',  '2Y': 'BC_2YEAR',  '3Y': 'BC_3YEAR',
-    '5Y': 'BC_5YEAR',  '7Y': 'BC_7YEAR',  '10Y': 'BC_10YEAR',
-    '20Y': 'BC_20YEAR','30Y': 'BC_30YEAR',
+# FRED series for full US Treasury yield curve (replaces Treasury XML endpoint)
+FRED_YIELD_CURVE = {
+    '1M': 'DGS1MO', '3M': 'DGS3MO', '6M': 'DGS6MO',
+    '1Y': 'DGS1',   '2Y': 'DGS2',   '3Y': 'DGS3',
+    '5Y': 'DGS5',   '7Y': 'DGS7',   '10Y': 'DGS10',
+    '20Y': 'DGS20', '30Y': 'DGS30',
 }
 
 # Deployment radar signal thresholds
@@ -428,58 +424,42 @@ def build_gold_data() -> dict:
 
 # ─── US Treasury Yield Curve ─────────────────────────────────────────────────
 
-def parse_treasury_xml(xml_text: str) -> dict:
-    """Parse Treasury daily yield curve XML into {maturity: yield} dict."""
-    try:
-        root = ET.fromstring(xml_text)
-        result = {}
-        # Namespace-agnostic search — Treasury namespace URIs can vary
-        for label, field in TREASURY_MATURITIES.items():
-            for el in root.iter():
-                if el.tag.endswith(field) and el.text and el.text.strip():
-                    try:
-                        result[label] = float(el.text.strip())
-                    except ValueError:
-                        pass
-                    break
-        return result
-    except Exception as e:
-        log.error(f"Treasury XML parse failed: {e}")
-        return {}
-
-
-def fetch_treasury_curve(date: datetime) -> dict:
-    """Fetch US Treasury yield curve for a given month."""
-    try:
-        ym = date.strftime("%Y%m")
-        url = (
-            f"https://home.treasury.gov/resource-center/data-chart-center/"
-            f"interest-rates/pages/xml?data=daily_treasury_yield_curve"
-            f"&field_tdr_date_value={ym}"
-        )
-        resp = requests.get(url, timeout=20)
-        resp.raise_for_status()
-        return parse_treasury_xml(resp.text)
-    except Exception as e:
-        log.error(f"Treasury curve fetch failed for {date.strftime('%Y-%m')}: {e}")
-        return {}
+def _fred_curve_snapshot(target_date: datetime, obs_by_series: dict) -> dict:
+    """Extract yield curve snapshot for a target date from pre-fetched FRED observations."""
+    target_str = target_date.strftime("%Y-%m-%d")
+    snapshot = {}
+    for label, obs in obs_by_series.items():
+        for o in obs:
+            if o["date"] <= target_str:
+                try:
+                    snapshot[label] = round(float(o["value"]), 2)
+                except (ValueError, KeyError):
+                    pass
+                break
+    return snapshot
 
 
 def build_yield_curve_data() -> dict:
-    """Fetch yield curves for today, 1Y ago, 2Y ago + international benchmarks."""
+    """Fetch US yield curves (today/1Y/2Y ago) and international benchmarks from FRED."""
     now       = datetime.now()
     one_y_ago = now - timedelta(days=365)
     two_y_ago = now - timedelta(days=730)
 
-    log.info("Fetching Treasury yield curves...")
-    today_curve    = fetch_treasury_curve(now)
-    one_yr_curve   = fetch_treasury_curve(one_y_ago)
-    two_yr_curve   = fetch_treasury_curve(two_y_ago)
+    log.info("Fetching US yield curve from FRED...")
+    obs_by_series = {}
+    for label, series_id in FRED_YIELD_CURVE.items():
+        obs = fetch_fred_series(series_id, lookback_days=365 * 3)
+        if obs:
+            obs_by_series[label] = obs  # already desc order
+
+    today_curve  = _fred_curve_snapshot(now,       obs_by_series)
+    one_yr_curve = _fred_curve_snapshot(one_y_ago, obs_by_series)
+    two_yr_curve = _fred_curve_snapshot(two_y_ago, obs_by_series)
 
     # International 10Y benchmarks
     eur_10y = fetch_fred_latest(FRED_BUND)
     gbp_10y = fetch_fred_latest("IRLTLT01GBM156N")
-    chf_10y_raw = _fetch_swiss_10y()
+    chf_10y = _fetch_swiss_10y()
 
     return {
         "today":    today_curve,
@@ -488,7 +468,7 @@ def build_yield_curve_data() -> dict:
         "benchmarks": {
             "EUR": eur_10y,
             "GBP": round(gbp_10y, 2) if gbp_10y is not None else None,
-            "CHF": chf_10y_raw,
+            "CHF": chf_10y,
         },
     }
 
