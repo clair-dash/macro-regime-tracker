@@ -355,13 +355,15 @@ function render(D) {
     </div>
   `;
 
-  if (D.gold) {
-    drawGoldChart(D.gold);
-    const bm  = (D.yield_curve || {}).benchmarks || {};
-    const u10 = ((D.yield_curve || {}).today || {})['10Y'];
-    drawBmChart(bm, u10);
-  }
-  if (D.yield_curve) drawCurveChart(D.yield_curve);
+  requestAnimationFrame(() => {
+    if (D.gold) {
+      drawGoldChart(D.gold);
+      const bm  = (D.yield_curve || {}).benchmarks || {};
+      const u10 = ((D.yield_curve || {}).today || {})['10Y'];
+      drawBmChart(bm, u10);
+    }
+    if (D.yield_curve) drawCurveChart(D.yield_curve);
+  });
 }
 
 // ─── Data Loading ───────────────────────────────────────────────────────────
