@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-08T13:37:46.300746Z",
+  "timestamp": "2026-05-08T13:55:20.176199Z",
   "macro_regime": {
     "inflation": {
       "value": 3.3202,
@@ -15,42 +15,21 @@
       "series": "CPI YoY %"
     },
     "pce": {
-      "value": 3.4961,
-      "direction": "accelerating",
-      "sparkline": [
-        2.7126,
-        2.8202,
-        2.8781,
-        2.8569,
-        2.8296,
-        3.4961
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "PCE YoY %"
     },
     "liquidity": {
-      "value": 4.5746,
-      "direction": "accelerating",
-      "sparkline": [
-        4.2809,
-        3.8472,
-        4.0385,
-        4.0895,
-        4.6906,
-        4.5746
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": 6.71,
+      "value": null,
       "direction": "stable",
-      "sparkline": [
-        6.675,
-        6.694,
-        6.706,
-        6.707,
-        6.7,
-        6.71
-      ],
+      "sparkline": [],
       "series": "Fed BS $T"
     },
     "real_yield": {
@@ -68,19 +47,19 @@
     }
   },
   "gold": {
-    "price_usd": 4735.8999,
-    "price_chf": 3678.85,
+    "price_usd": 4747.5,
+    "price_chf": 3688.81,
     "returns": {
-      "w1": 2.29,
-      "m1": -1.17,
-      "ytd": 9.77,
-      "y1": 43.66
+      "w1": 2.54,
+      "m1": -0.93,
+      "ytd": 10.04,
+      "y1": 44.01
     },
     "returns_chf": {
-      "w1": 1.68,
-      "m1": -3.0,
-      "ytd": 7.65,
-      "y1": 35.43
+      "w1": 0.34,
+      "m1": -2.49,
+      "ytd": 7.12,
+      "y1": 31.12
     },
     "real_yield_history": [
       -0.91,
@@ -1383,77 +1362,91 @@
       4325.6001,
       4713.8999,
       4614.7002,
-      4735.1001
+      4747.5
     ],
     "dxy": {
-      "value": 97.902,
+      "value": 97.868,
       "signal": "supportive",
       "returns": {
-        "w1": -0.31,
-        "m1": -0.93,
-        "ytd": -0.53,
-        "y1": -2.72
+        "w1": -0.35,
+        "m1": -0.96,
+        "ytd": -0.56,
+        "y1": -2.75
       }
     }
   },
   "deployment_radar": {
     "hy_spread": {
-      "value": 3.0,
-      "signal": "low",
-      "sparkline": [],
+      "value": null,
+      "signal": "neutral",
+      "sparkline": [
+        2.83,
+        2.77,
+        2.78,
+        2.77,
+        2.75,
+        2.79
+      ],
       "unit": "bp"
     },
     "ig_spread": {
-      "value": null,
-      "signal": "neutral",
-      "sparkline": [],
+      "value": 1.0,
+      "signal": "low",
+      "sparkline": [
+        0.81,
+        0.81,
+        0.8,
+        0.79,
+        0.78,
+        0.79
+      ],
       "unit": "bp"
     },
     "vix": {
-      "value": 17.1,
+      "value": 17.0,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 9.24,
+      "value": 9.3,
       "signal": "elevated",
       "unit": "%"
     }
   },
   "yield_curve": {
     "today": {
+      "1M": 3.7,
+      "3M": 3.69,
       "6M": 3.74,
+      "1Y": 3.73,
       "2Y": 3.87,
-      "3Y": 3.89,
       "5Y": 3.99,
       "7Y": 4.17,
-      "10Y": 4.36,
-      "20Y": 4.92,
-      "30Y": 4.94
+      "10Y": 4.36
     },
     "1y_ago": {
+      "1M": 4.37,
+      "3M": 4.34,
       "6M": 4.28,
+      "1Y": 4.05,
       "2Y": 3.9,
-      "3Y": 3.85,
       "5Y": 4.0,
       "7Y": 4.18,
-      "10Y": 4.37,
-      "20Y": 4.86,
-      "30Y": 4.83
+      "10Y": 4.37
     },
     "2y_ago": {
+      "1M": 5.51,
+      "3M": 5.45,
       "6M": 5.41,
+      "1Y": 5.13,
       "2Y": 4.84,
-      "3Y": 4.63,
       "5Y": 4.5,
       "7Y": 4.49,
-      "10Y": 4.48,
-      "20Y": 4.73,
-      "30Y": 4.64
+      "10Y": 4.48
     },
     "benchmarks": {
       "EUR": 2.9052,
-      "GBP": 4.7,
+      "GBP": null,
       "CHF": 0.56
     }
   }
