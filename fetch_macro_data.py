@@ -424,3 +424,95 @@ def build_gold_data() -> dict:
             "returns": yf_returns(YF_DXY, dxy_price),
         },
     }
+
+
+# ─── US Treasury Yield Curve ─────────────────────────────────────────────────
+
+def parse_treasury_xml(xml_text: str) -> dict:
+    """Parse Treasury daily yield curve XML into {maturity: yield} dict."""
+    try:
+        root = ET.fromstring(xml_text)
+        ns_d = TREASURY_NS['d']
+        ns_m = TREASURY_NS['m']
+        entries = root.findall(f'.//{{{TREASURY_NS["atom"]}}}entry')
+        if not entries:
+            return {}
+        props = entries[-1].find(f'.//{{{ns_m}}}properties')
+        if props is None:
+            return {}
+        result = {}
+        for label, field in TREASURY_MATURITIES.items():
+            el = props.find(f'{{{ns_d}}}{field}')
+            if el is not None and el.text:
+                try:
+                    result[label] = float(el.text)
+                except ValueError:
+                    result[label] = None
+        return result
+    except Exception as e:
+        log.error(f"Treasury XML parse failed: {e}")
+        return {}
+
+
+def fetch_treasury_curve(date: datetime) -> dict:
+    """Fetch US Treasury yield curve for a given month."""
+    try:
+        ym = date.strftime("%Y%m")
+        url = (
+            f"https://home.treasury.gov/resource-center/data-chart-center/"
+            f"interest-rates/pages/xml?data=daily_treasury_yield_curve"
+            f"&field_tdr_date_value={ym}"
+        )
+        resp = requests.get(url, timeout=20)
+        resp.raise_for_status()
+        return parse_treasury_xml(resp.text)
+    except Exception as e:
+        log.error(f"Treasury curve fetch failed for {date.strftime('%Y-%m')}: {e}")
+        return {}
+
+
+def build_yield_curve_data() -> dict:
+    """Fetch yield curves for today, 1Y ago, 2Y ago + international benchmarks."""
+    now       = datetime.now()
+    one_y_ago = now - timedelta(days=365)
+    two_y_ago = now - timedelta(days=730)
+
+    log.info("Fetching Treasury yield curves...")
+    today_curve    = fetch_treasury_curve(now)
+    one_yr_curve   = fetch_treasury_curve(one_y_ago)
+    two_yr_curve   = fetch_treasury_curve(two_y_ago)
+
+    # International 10Y benchmarks
+    eur_10y = fetch_fred_latest(FRED_BUND)
+    gbp_10y = yf_latest_price(YF_GBP10Y)
+    chf_10y_raw = _fetch_swiss_10y()
+
+    return {
+        "today":    today_curve,
+        "1y_ago":   one_yr_curve,
+        "2y_ago":   two_yr_curve,
+        "benchmarks": {
+            "EUR": eur_10y,
+            "GBP": round(gbp_10y, 2) if gbp_10y else None,
+            "CHF": chf_10y_raw,
+        },
+    }
+
+
+def _fetch_swiss_10y() -> float | None:
+    """Fetch Swiss 10Y yield from SNB API."""
+    try:
+        url  = "https://data.snb.ch/api/cube/rendoblim/data/csv/en"
+        resp = requests.get(url, timeout=15)
+        if resp.status_code == 200:
+            for line in reversed(resp.text.strip().split("\n")):
+                parts = line.split(";")
+                if len(parts) >= 2:
+                    try:
+                        return round(float(parts[-1]), 2)
+                    except ValueError:
+                        continue
+        return None
+    except Exception as e:
+        log.warning(f"SNB fetch failed: {e}")
+        return None

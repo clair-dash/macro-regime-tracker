@@ -144,3 +144,42 @@ def test_build_gold_data_returns_expected_keys():
     assert isinstance(result["returns"], dict)
     for k in ["w1", "m1", "ytd", "y1"]:
         assert k in result["returns"]
+
+
+# ─── Treasury XML Parser Tests ────────────────────────────────────────────────
+
+from fetch_macro_data import parse_treasury_xml
+
+SAMPLE_XML = """<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+  <entry>
+    <content type="application/xml">
+      <m:properties>
+        <d:BC_1MONTH>5.30</d:BC_1MONTH>
+        <d:BC_3MONTH>5.28</d:BC_3MONTH>
+        <d:BC_6MONTH>5.15</d:BC_6MONTH>
+        <d:BC_1YEAR>4.98</d:BC_1YEAR>
+        <d:BC_2YEAR>4.52</d:BC_2YEAR>
+        <d:BC_3YEAR>4.35</d:BC_3YEAR>
+        <d:BC_5YEAR>4.22</d:BC_5YEAR>
+        <d:BC_7YEAR>4.28</d:BC_7YEAR>
+        <d:BC_10YEAR>4.42</d:BC_10YEAR>
+        <d:BC_20YEAR>4.72</d:BC_20YEAR>
+        <d:BC_30YEAR>4.62</d:BC_30YEAR>
+      </m:properties>
+    </content>
+  </entry>
+</feed>"""
+
+def test_parse_treasury_xml_returns_all_maturities():
+    result = parse_treasury_xml(SAMPLE_XML)
+    assert result["1M"]  == 5.30
+    assert result["10Y"] == 4.42
+    assert result["30Y"] == 4.62
+    assert len(result) == 11
+
+def test_parse_treasury_xml_returns_empty_on_bad_xml():
+    result = parse_treasury_xml("<invalid>")
+    assert result == {}
