@@ -143,3 +143,133 @@ def assign_radar_signal(metric: str, value) -> str:
     if value > t["high"]:
         return "elevated"
     return "neutral"
+
+
+# ─── FRED Fetcher ────────────────────────────────────────────────────────────
+
+def fetch_fred_series(series_id: str, lookback_days: int = 365) -> list:
+    """Fetch FRED observations. Returns list of {date, value} dicts, desc order."""
+    if not FRED_API_KEY:
+        log.warning(f"No FRED_API_KEY — skipping {series_id}")
+        return []
+    try:
+        end   = datetime.now().strftime("%Y-%m-%d")
+        start = (datetime.now() - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+        url = (
+            f"https://api.stlouisfed.org/fred/series/observations"
+            f"?series_id={series_id}&api_key={FRED_API_KEY}"
+            f"&observation_start={start}&observation_end={end}"
+            f"&file_type=json&sort_order=desc&limit=2000"
+        )
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        obs = resp.json().get("observations", [])
+        return [{"date": o["date"], "value": o["value"]}
+                for o in obs if o["value"] != "."]
+    except Exception as e:
+        log.error(f"FRED fetch failed for {series_id}: {e}")
+        return []
+
+
+def fetch_fred_latest(series_id: str) -> float | None:
+    """Return the most recent numeric value from a FRED series."""
+    obs = fetch_fred_series(series_id, lookback_days=90)
+    if obs:
+        try:
+            return round(float(obs[0]["value"]), 4)
+        except (ValueError, IndexError):
+            return None
+    return None
+
+
+def fetch_fred_history(series_id: str, lookback_days: int) -> list[float]:
+    """Return chronological list of floats (ascending date) for time series use."""
+    obs = fetch_fred_series(series_id, lookback_days=lookback_days)
+    values = []
+    for o in reversed(obs):
+        try:
+            values.append(float(o["value"]))
+        except ValueError:
+            pass
+    return values
+
+
+def fred_yoy_series(series_id: str, lookback_days: int = 365 * 6) -> list[float]:
+    """
+    Compute YoY % change series for a monthly FRED index (e.g. CPI, PCE, M2).
+    Returns chronological list of YoY values (length = raw_length - 12).
+    """
+    obs = fetch_fred_series(series_id, lookback_days=lookback_days)
+    if len(obs) < 13:
+        return []
+    # obs is desc; reverse to ascending
+    asc = list(reversed(obs))
+    yoy = []
+    for i in range(12, len(asc)):
+        try:
+            current = float(asc[i]["value"])
+            prior   = float(asc[i - 12]["value"])
+            if prior != 0:
+                yoy.append(round((current / prior - 1) * 100, 4))
+        except (ValueError, ZeroDivisionError):
+            pass
+    return yoy
+
+
+def build_macro_regime() -> dict:
+    """Fetch and compute the Macro Regime panel data."""
+    lookback = LOOKBACK_YEARS * 365
+
+    # CPI YoY
+    cpi_yoy = fred_yoy_series(FRED_CPI, lookback_days=lookback + 365)
+    cpi_yoy_latest = cpi_yoy[-1] if cpi_yoy else None
+
+    # PCE YoY
+    pce_yoy = fred_yoy_series(FRED_PCE, lookback_days=lookback + 365)
+    pce_yoy_latest = pce_yoy[-1] if pce_yoy else None
+
+    # M2 YoY
+    m2_yoy = fred_yoy_series(FRED_M2, lookback_days=lookback + 365)
+    m2_yoy_latest = m2_yoy[-1] if m2_yoy else None
+
+    # Fed Balance Sheet (WALCL, in millions → report in $T)
+    fed_bs_raw = fetch_fred_history(FRED_FED_BS, lookback_days=lookback)
+    fed_bs_t   = [round(v / 1_000_000, 3) for v in fed_bs_raw]
+    fed_bs_latest = fed_bs_t[-1] if fed_bs_t else None
+
+    # Real Yield (DFII10, already a %)
+    real_yld_raw = fetch_fred_history(FRED_REAL_YLD, lookback_days=lookback)
+    real_yld_latest = real_yld_raw[-1] if real_yld_raw else None
+
+    return {
+        "inflation": {
+            "value":     cpi_yoy_latest,
+            "direction": compute_direction(cpi_yoy),
+            "sparkline": build_sparkline(cpi_yoy),
+            "series":    "CPI YoY %",
+        },
+        "pce": {
+            "value":     pce_yoy_latest,
+            "direction": compute_direction(pce_yoy),
+            "sparkline": build_sparkline(pce_yoy),
+            "series":    "PCE YoY %",
+        },
+        "liquidity": {
+            "value":     m2_yoy_latest,
+            "direction": compute_direction(m2_yoy),
+            "sparkline": build_sparkline(m2_yoy),
+            "series":    "M2 YoY %",
+        },
+        "fed_bs": {
+            "value":     fed_bs_latest,
+            "direction": compute_direction(fed_bs_t),
+            "sparkline": build_sparkline(fed_bs_t),
+            "series":    "Fed BS $T",
+        },
+        "real_yield": {
+            "value":     real_yld_latest,
+            "direction": compute_direction(real_yld_raw),
+            "sparkline": build_sparkline(real_yld_raw),
+            "series":    "TIPS 10Y %",
+        },
+    }

@@ -86,3 +86,46 @@ def test_radar_signal_vix_stress():
 
 def test_radar_signal_unknown_key():
     assert assign_radar_signal("unknown", 100) == "neutral"
+
+# ─── FRED Fetcher Tests ───────────────────────────────────────────────────────
+
+from unittest.mock import patch, MagicMock
+from fetch_macro_data import fetch_fred_series, fetch_fred_latest
+
+def test_fetch_fred_series_returns_list_on_success():
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {
+        "observations": [
+            {"date": "2026-05-01", "value": "3.3"},
+            {"date": "2026-04-01", "value": "3.2"},
+            {"date": "2026-03-01", "value": "."},   # missing — should be excluded
+        ]
+    }
+    mock_resp.raise_for_status = MagicMock()
+    with patch("fetch_macro_data.requests.get", return_value=mock_resp):
+        with patch.dict("os.environ", {"FRED_API_KEY": "testkey"}):
+            import fetch_macro_data
+            fetch_macro_data.FRED_API_KEY = "testkey"
+            result = fetch_fred_series("CPIAUCSL", lookback_days=90)
+    assert len(result) == 2
+    assert result[0]["value"] == "3.3"
+
+def test_fetch_fred_series_returns_empty_without_key():
+    import fetch_macro_data
+    original = fetch_macro_data.FRED_API_KEY
+    fetch_macro_data.FRED_API_KEY = ""
+    result = fetch_fred_series("CPIAUCSL")
+    fetch_macro_data.FRED_API_KEY = original
+    assert result == []
+
+def test_fetch_fred_latest_returns_float():
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {
+        "observations": [{"date": "2026-05-01", "value": "1.94"}]
+    }
+    mock_resp.raise_for_status = MagicMock()
+    with patch("fetch_macro_data.requests.get", return_value=mock_resp):
+        import fetch_macro_data
+        fetch_macro_data.FRED_API_KEY = "testkey"
+        result = fetch_fred_latest("DFII10")
+    assert result == 1.94
