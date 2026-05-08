@@ -273,3 +273,154 @@ def build_macro_regime() -> dict:
             "series":    "TIPS 10Y %",
         },
     }
+
+
+# ─── yfinance Helpers ────────────────────────────────────────────────────────
+
+def yf_latest_price(ticker: str) -> float | None:
+    """Get the most recent closing price for a ticker."""
+    import math
+    try:
+        df = safe_download(ticker, period="5d", interval="1d")
+        if df.empty:
+            return None
+        price = float(df["Close"].dropna().iloc[-1])
+        return None if (math.isnan(price) or math.isinf(price)) else round(price, 4)
+    except Exception as e:
+        log.error(f"Price fetch failed for {ticker}: {e}")
+        return None
+
+
+def yf_returns(ticker: str, current_price: float) -> dict:
+    """Compute 1W / 1M / YTD / 1Y returns. Returns dict with None on failure."""
+    import math
+    empty = {"w1": None, "m1": None, "ytd": None, "y1": None}
+    if current_price is None:
+        return empty
+    try:
+        df = safe_download(ticker, period="13mo", interval="1d")
+        if df.empty or len(df) < 5:
+            return empty
+        closes = df["Close"].dropna()
+
+        def pct(past):
+            if past is None or past == 0:
+                return None
+            v = (current_price - past) / past * 100
+            return round(v, 2) if not math.isnan(v) else None
+
+        def price_n_ago(n):
+            idx = max(0, len(closes) - 1 - n)
+            v = float(closes.iloc[idx])
+            return None if math.isnan(v) else v
+
+        # YTD
+        ytd = None
+        try:
+            yr_start = pd.Timestamp(datetime(datetime.now().year, 1, 1))
+            if closes.index.tz:
+                yr_start = yr_start.tz_localize(closes.index.tz)
+            ytd_slice = closes[closes.index >= yr_start]
+            if len(ytd_slice):
+                s = float(ytd_slice.iloc[0])
+                ytd = pct(s) if not math.isnan(s) else None
+        except Exception:
+            pass
+
+        return {
+            "w1":  pct(price_n_ago(5)),
+            "m1":  pct(price_n_ago(21)),
+            "ytd": ytd,
+            "y1":  pct(price_n_ago(252)) if len(closes) > 252 else pct(float(closes.iloc[0])),
+        }
+    except Exception as e:
+        log.error(f"Returns failed for {ticker}: {e}")
+        return empty
+
+
+def yf_history_series(ticker: str, years: int = 5) -> list[float]:
+    """Return chronological monthly close prices for a ticker."""
+    try:
+        df = safe_download(ticker, period=f"{years * 12}mo", interval="1mo")
+        if df.empty:
+            return []
+        return [round(float(v), 4) for v in df["Close"].dropna()]
+    except Exception as e:
+        log.error(f"History failed for {ticker}: {e}")
+        return []
+
+
+def build_gold_data() -> dict:
+    """Fetch gold price, returns, DXY, and real yield for Gold Positioning panel."""
+    import math
+
+    gold_usd = yf_latest_price(YF_GOLD)
+    usdchf   = yf_latest_price(YF_USDCHF)
+    gold_chf = round(gold_usd * usdchf, 2) if (gold_usd and usdchf) else None
+
+    returns = yf_returns(YF_GOLD, gold_usd)
+
+    # Gold CHF returns (cross-currency)
+    chf_returns = {"w1": None, "m1": None, "ytd": None, "y1": None}
+    try:
+        g_hist  = safe_download(YF_GOLD,   period="13mo", interval="1d")
+        fx_hist = safe_download(YF_USDCHF, period="13mo", interval="1d")
+        if not g_hist.empty and not fx_hist.empty:
+            gc  = g_hist["Close"].dropna()
+            uc  = fx_hist["Close"].dropna()
+            common = gc.index.intersection(uc.index)
+            if len(common) > 5:
+                gold_chf_series = (gc.loc[common] * uc.loc[common])
+                now_chf = float(gold_chf_series.iloc[-1])
+
+                def chf_pct(n):
+                    idx  = max(0, len(gold_chf_series) - 1 - n)
+                    past = float(gold_chf_series.iloc[idx])
+                    if past == 0 or math.isnan(past):
+                        return None
+                    v = (now_chf - past) / past * 100
+                    return round(v, 2) if not math.isnan(v) else None
+
+                chf_returns["w1"]  = chf_pct(5)
+                chf_returns["m1"]  = chf_pct(21)
+                chf_returns["y1"]  = chf_pct(252) if len(gold_chf_series) > 252 else chf_pct(len(gold_chf_series) - 1)
+
+                yr_start = pd.Timestamp(datetime(datetime.now().year, 1, 1))
+                if gold_chf_series.index.tz:
+                    yr_start = yr_start.tz_localize(gold_chf_series.index.tz)
+                ytd_s = gold_chf_series[gold_chf_series.index >= yr_start]
+                if len(ytd_s):
+                    s = float(ytd_s.iloc[0])
+                    if s and not math.isnan(s):
+                        chf_returns["ytd"] = round((now_chf - s) / s * 100, 2)
+    except Exception as e:
+        log.warning(f"Gold CHF returns failed: {e}")
+
+    # Real yield history for overlay
+    real_yld_hist = fetch_fred_history(FRED_REAL_YLD, lookback_days=LOOKBACK_YEARS * 365)
+    gold_hist     = yf_history_series(YF_GOLD, years=LOOKBACK_YEARS)
+
+    # DXY
+    dxy_price = yf_latest_price(YF_DXY)
+    if dxy_price is None:
+        dxy_signal = "unknown"
+    elif dxy_price < 100:
+        dxy_signal = "supportive"
+    elif dxy_price > 105:
+        dxy_signal = "headwind"
+    else:
+        dxy_signal = "neutral"
+
+    return {
+        "price_usd":          gold_usd,
+        "price_chf":          gold_chf,
+        "returns":            returns,
+        "returns_chf":        chf_returns,
+        "real_yield_history": real_yld_hist,
+        "gold_price_history": gold_hist,
+        "dxy": {
+            "value":   dxy_price,
+            "signal":  dxy_signal,
+            "returns": yf_returns(YF_DXY, dxy_price),
+        },
+    }

@@ -129,3 +129,18 @@ def test_fetch_fred_latest_returns_float():
         fetch_macro_data.FRED_API_KEY = "testkey"
         result = fetch_fred_latest("DFII10")
     assert result == 1.94
+
+
+# ─── Gold Data and yfinance Tests ──────────────────────────────────────────────
+
+from fetch_macro_data import build_gold_data
+
+def test_build_gold_data_returns_expected_keys():
+    result = build_gold_data()
+    assert isinstance(result, dict)
+    for key in ["price_usd", "price_chf", "returns", "real_yield_history",
+                "gold_price_history", "dxy"]:
+        assert key in result, f"Missing key: {key}"
+    assert isinstance(result["returns"], dict)
+    for k in ["w1", "m1", "ytd", "y1"]:
+        assert k in result["returns"]
