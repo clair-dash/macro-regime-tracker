@@ -183,3 +183,33 @@ def test_parse_treasury_xml_returns_all_maturities():
 def test_parse_treasury_xml_returns_empty_on_bad_xml():
     result = parse_treasury_xml("<invalid>")
     assert result == {}
+
+
+# ─── JSON Schema Validation Tests ────────────────────────────────────────────
+
+def test_output_json_schema():
+    """Validate macro_data.json has the required top-level structure."""
+    import json
+    from pathlib import Path
+    json_path = Path(__file__).parent.parent / "macro_data.json"
+    if not json_path.exists():
+        import pytest
+        pytest.skip("macro_data.json not generated yet — run fetch_macro_data.py first")
+    with open(json_path) as f:
+        data = json.load(f)
+    assert "timestamp" in data
+    assert "macro_regime" in data
+    assert "gold" in data
+    assert "deployment_radar" in data
+    assert "yield_curve" in data
+    for key in ["inflation", "pce", "liquidity", "fed_bs", "real_yield"]:
+        assert key in data["macro_regime"], f"macro_regime missing: {key}"
+        entry = data["macro_regime"][key]
+        assert "value"     in entry
+        assert "direction" in entry
+        assert "sparkline" in entry
+        assert entry["direction"] in ("accelerating", "stable", "decelerating")
+    for key in ["hy_spread", "ig_spread", "vix", "spx_vs_200ma"]:
+        assert key in data["deployment_radar"], f"deployment_radar missing: {key}"
+    for key in ["today", "1y_ago", "2y_ago", "benchmarks"]:
+        assert key in data["yield_curve"], f"yield_curve missing: {key}"
