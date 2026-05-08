@@ -101,3 +101,45 @@ def safe_download(ticker, **kwargs):
             if attempt == 2:
                 return pd.DataFrame()
     return pd.DataFrame()
+
+
+# ─── Regime Indicators ───────────────────────────────────────────────────────
+
+def compute_direction(series: list, window_months: int = None,
+                      accel: float = None, decel: float = None) -> str:
+    """Rate-of-change threshold direction badge for a monthly time series."""
+    w = window_months or ROC_WINDOW_MONTHS
+    a = accel if accel is not None else ACCEL_THRESHOLD
+    d = decel if decel is not None else DECEL_THRESHOLD
+    clean = [v for v in series if v is not None]
+    if len(clean) < w + 1:
+        return "stable"
+    latest = clean[-1]
+    prior  = clean[-(w + 1)]
+    if prior == 0:
+        return "stable"
+    roc = (latest - prior) / abs(prior)
+    if roc > a:
+        return "accelerating"
+    if roc < d:
+        return "decelerating"
+    return "stable"
+
+
+def build_sparkline(values: list, n_points: int = None) -> list:
+    """Return last n non-None values for sparkline rendering."""
+    n = n_points or SPARKLINE_POINTS
+    clean = [v for v in values if v is not None]
+    return clean[-n:] if len(clean) >= n else clean
+
+
+def assign_radar_signal(metric: str, value) -> str:
+    """Map a metric value to low / neutral / elevated signal string."""
+    if value is None or metric not in RADAR_THRESHOLDS:
+        return "neutral"
+    t = RADAR_THRESHOLDS[metric]
+    if value < t["low"]:
+        return "low"
+    if value > t["high"]:
+        return "elevated"
+    return "neutral"
