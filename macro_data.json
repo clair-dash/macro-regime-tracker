@@ -1,17 +1,10 @@
 {
-  "timestamp": "2026-05-11T08:59:09.836450Z",
+  "timestamp": "2026-05-11T12:12:37.012510Z",
   "macro_regime": {
     "inflation": {
-      "value": 3.3202,
-      "direction": "accelerating",
-      "sparkline": [
-        3.0226,
-        2.9883,
-        3.0023,
-        2.8287,
-        2.6646,
-        3.3202
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "CPI YoY %"
     },
     "pce": {
@@ -41,46 +34,32 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": 6.71,
+      "value": null,
       "direction": "stable",
-      "sparkline": [
-        6.675,
-        6.694,
-        6.706,
-        6.707,
-        6.7,
-        6.71
-      ],
+      "sparkline": [],
       "series": "Fed BS $T"
     },
     "real_yield": {
-      "value": 1.96,
-      "direction": "accelerating",
-      "sparkline": [
-        1.94,
-        1.91,
-        1.95,
-        1.96,
-        1.94,
-        1.96
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "TIPS 10Y %"
     }
   },
   "gold": {
-    "price_usd": 4678.3999,
-    "price_chf": 3641.2,
+    "price_usd": 4682.0,
+    "price_chf": 3645.87,
     "returns": {
-      "w1": 3.52,
-      "m1": -1.75,
-      "ytd": 8.44,
-      "y1": 40.27
+      "w1": 3.6,
+      "m1": -1.68,
+      "ytd": 8.52,
+      "y1": 40.37
     },
     "returns_chf": {
-      "w1": 3.15,
-      "m1": -3.31,
-      "ytd": 6.56,
-      "y1": 31.25
+      "w1": 3.27,
+      "m1": -3.19,
+      "ytd": 6.69,
+      "y1": 31.41
     },
     "real_yield_history": [
       -0.85,
@@ -1382,16 +1361,16 @@
       4325.6001,
       4713.8999,
       4614.7002,
-      4678.3999
+      4682.0
     ],
     "dxy": {
-      "value": 97.961,
+      "value": 98.007,
       "signal": "supportive",
       "returns": {
-        "w1": -0.52,
-        "m1": -0.7,
-        "ytd": -0.47,
-        "y1": -2.37
+        "w1": -0.47,
+        "m1": -0.65,
+        "ytd": -0.42,
+        "y1": -2.33
       }
     }
   },
