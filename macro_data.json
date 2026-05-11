@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-11T15:35:48.500368Z",
+  "timestamp": "2026-05-11T17:34:55.072434Z",
   "macro_regime": {
     "inflation": {
       "value": 3.3202,
@@ -68,19 +68,19 @@
     }
   },
   "gold": {
-    "price_usd": 4745.1001,
-    "price_chf": 3687.89,
+    "price_usd": 4728.5,
+    "price_chf": 3677.35,
     "returns": {
-      "w1": 4.99,
-      "m1": -0.35,
-      "ytd": 9.98,
-      "y1": 42.26
+      "w1": 4.62,
+      "m1": -0.7,
+      "ytd": 9.6,
+      "y1": 41.77
     },
     "returns_chf": {
-      "w1": 4.46,
-      "m1": -2.07,
-      "ytd": 7.92,
-      "y1": 32.93
+      "w1": 4.16,
+      "m1": -2.36,
+      "ytd": 7.61,
+      "y1": 32.54
     },
     "real_yield_history": [
       -0.85,
@@ -1382,16 +1382,16 @@
       4325.6001,
       4713.8999,
       4614.7002,
-      4745.1001
+      4728.5
     ],
     "dxy": {
-      "value": 97.861,
+      "value": 97.918,
       "signal": "supportive",
       "returns": {
-        "w1": -0.62,
-        "m1": -0.8,
-        "ytd": -0.57,
-        "y1": -2.47
+        "w1": -0.56,
+        "m1": -0.74,
+        "ytd": -0.51,
+        "y1": -2.41
       }
     }
   },
@@ -1410,8 +1410,8 @@
       "unit": "bp"
     },
     "ig_spread": {
-      "value": null,
-      "signal": "neutral",
+      "value": 1.0,
+      "signal": "low",
       "sparkline": [
         0.81,
         0.8,
@@ -1423,12 +1423,12 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 18.0,
+      "value": 18.1,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 9.79,
+      "value": 9.82,
       "signal": "elevated",
       "unit": "%"
     }
