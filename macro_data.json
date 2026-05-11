@@ -1,10 +1,17 @@
 {
-  "timestamp": "2026-05-11T12:12:37.012510Z",
+  "timestamp": "2026-05-11T15:35:48.500368Z",
   "macro_regime": {
     "inflation": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 3.3202,
+      "direction": "accelerating",
+      "sparkline": [
+        3.0226,
+        2.9883,
+        3.0023,
+        2.8287,
+        2.6646,
+        3.3202
+      ],
       "series": "CPI YoY %"
     },
     "pce": {
@@ -34,32 +41,46 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": null,
+      "value": 6.71,
       "direction": "stable",
-      "sparkline": [],
+      "sparkline": [
+        6.675,
+        6.694,
+        6.706,
+        6.707,
+        6.7,
+        6.71
+      ],
       "series": "Fed BS $T"
     },
     "real_yield": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 1.96,
+      "direction": "accelerating",
+      "sparkline": [
+        1.94,
+        1.91,
+        1.95,
+        1.96,
+        1.94,
+        1.96
+      ],
       "series": "TIPS 10Y %"
     }
   },
   "gold": {
-    "price_usd": 4682.0,
-    "price_chf": 3645.87,
+    "price_usd": 4745.1001,
+    "price_chf": 3687.89,
     "returns": {
-      "w1": 3.6,
-      "m1": -1.68,
-      "ytd": 8.52,
-      "y1": 40.37
+      "w1": 4.99,
+      "m1": -0.35,
+      "ytd": 9.98,
+      "y1": 42.26
     },
     "returns_chf": {
-      "w1": 3.27,
-      "m1": -3.19,
-      "ytd": 6.69,
-      "y1": 31.41
+      "w1": 4.46,
+      "m1": -2.07,
+      "ytd": 7.92,
+      "y1": 32.93
     },
     "real_yield_history": [
       -0.85,
@@ -1361,16 +1382,16 @@
       4325.6001,
       4713.8999,
       4614.7002,
-      4682.0
+      4745.1001
     ],
     "dxy": {
-      "value": 98.007,
+      "value": 97.861,
       "signal": "supportive",
       "returns": {
-        "w1": -0.47,
-        "m1": -0.65,
-        "ytd": -0.42,
-        "y1": -2.33
+        "w1": -0.62,
+        "m1": -0.8,
+        "ytd": -0.57,
+        "y1": -2.47
       }
     }
   },
@@ -1379,35 +1400,35 @@
       "value": 3.0,
       "signal": "low",
       "sparkline": [
-        2.83,
         2.77,
         2.78,
         2.77,
         2.75,
-        2.79
+        2.79,
+        2.81
       ],
       "unit": "bp"
     },
     "ig_spread": {
-      "value": 1.0,
-      "signal": "low",
+      "value": null,
+      "signal": "neutral",
       "sparkline": [
-        0.81,
         0.81,
         0.8,
         0.79,
         0.78,
+        0.79,
         0.79
       ],
       "unit": "bp"
     },
     "vix": {
-      "value": 18.2,
+      "value": 18.0,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 9.56,
+      "value": 9.79,
       "signal": "elevated",
       "unit": "%"
     }
