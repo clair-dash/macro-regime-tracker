@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-14T14:46:20.442798Z",
+  "timestamp": "2026-05-14T16:34:52.917365Z",
   "macro_regime": {
     "inflation": {
       "value": 3.947,
@@ -41,16 +41,9 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": 6.71,
+      "value": null,
       "direction": "stable",
-      "sparkline": [
-        6.675,
-        6.694,
-        6.706,
-        6.707,
-        6.7,
-        6.71
-      ],
+      "sparkline": [],
       "series": "Fed BS $T"
     },
     "real_yield": {
@@ -68,19 +61,19 @@
     }
   },
   "gold": {
-    "price_usd": 4694.3999,
-    "price_chf": 3671.96,
+    "price_usd": 4684.6001,
+    "price_chf": 3669.45,
     "returns": {
-      "w1": -0.11,
-      "m1": -2.2,
-      "ytd": 8.81,
-      "y1": 47.56
+      "w1": -0.32,
+      "m1": -2.4,
+      "ytd": 8.58,
+      "y1": 47.25
     },
     "returns_chf": {
-      "w1": 0.32,
-      "m1": -2.03,
-      "ytd": 7.46,
-      "y1": 37.5
+      "w1": 0.25,
+      "m1": -2.1,
+      "ytd": 7.39,
+      "y1": 37.41
     },
     "real_yield_history": [
       -0.9,
@@ -1382,23 +1375,23 @@
       4325.6001,
       4713.8999,
       4614.7002,
-      4694.0
+      4684.6001
     ],
     "dxy": {
-      "value": 98.6,
+      "value": 98.777,
       "signal": "supportive",
       "returns": {
-        "w1": 0.36,
-        "m1": 0.55,
-        "ytd": 0.18,
-        "y1": -2.41
+        "w1": 0.54,
+        "m1": 0.73,
+        "ytd": 0.36,
+        "y1": -2.24
       }
     }
   },
   "deployment_radar": {
     "hy_spread": {
-      "value": null,
-      "signal": "neutral",
+      "value": 3.0,
+      "signal": "low",
       "sparkline": [
         2.75,
         2.79,
@@ -1423,12 +1416,12 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 18.1,
+      "value": 17.8,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 10.61,
+      "value": 10.69,
       "signal": "elevated",
       "unit": "%"
     }
