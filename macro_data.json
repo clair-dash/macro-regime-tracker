@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-02T18:11:36.009230Z",
+  "timestamp": "2026-06-02T21:23:31.233521Z",
   "macro_regime": {
     "inflation": {
       "value": 3.947,
@@ -40,33 +40,26 @@
       "series": "Fed BS $T"
     },
     "real_yield": {
-      "value": 2.07,
-      "direction": "decelerating",
-      "sparkline": [
-        2.18,
-        2.16,
-        2.1,
-        2.09,
-        2.06,
-        2.07
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "TIPS 10Y %"
     }
   },
   "gold": {
-    "price_usd": 4517.2998,
-    "price_chf": 3559.63,
+    "price_usd": 4519.2002,
+    "price_chf": 3554.35,
     "returns": {
-      "w1": 0.38,
-      "m1": -2.43,
-      "ytd": 4.7,
-      "y1": 34.02
+      "w1": 0.42,
+      "m1": -2.39,
+      "ytd": 4.75,
+      "y1": 34.08
     },
     "returns_chf": {
-      "w1": 1.01,
-      "m1": -1.61,
-      "ytd": 4.17,
-      "y1": 28.44
+      "w1": 0.87,
+      "m1": -1.75,
+      "ytd": 4.02,
+      "y1": 28.25
     },
     "real_yield_history": [
       -0.79,
@@ -1315,6 +1308,7 @@
       2.1,
       2.09,
       2.06,
+      2.07,
       2.07
     ],
     "gold_price_history": [
@@ -1368,16 +1362,16 @@
       4713.8999,
       4614.7002,
       4560.5,
-      4517.2998
+      4519.2002
     ],
     "dxy": {
-      "value": 99.271,
+      "value": 99.204,
       "signal": "supportive",
       "returns": {
-        "w1": 0.1,
-        "m1": 1.08,
-        "ytd": 0.86,
-        "y1": -0.06
+        "w1": 0.03,
+        "m1": 1.01,
+        "ytd": 0.8,
+        "y1": -0.13
       }
     }
   },
@@ -1389,8 +1383,8 @@
       "unit": "bp"
     },
     "ig_spread": {
-      "value": 1.0,
-      "signal": "low",
+      "value": null,
+      "signal": "neutral",
       "sparkline": [
         0.74,
         0.74,
@@ -1402,12 +1396,12 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 16.0,
+      "value": 15.8,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 11.19,
+      "value": 11.22,
       "signal": "elevated",
       "unit": "%"
     }
@@ -1415,27 +1409,21 @@
   "yield_curve": {
     "today": {
       "1M": 3.72,
-      "2Y": 3.98,
-      "3Y": 4.06,
-      "10Y": 4.45,
-      "20Y": 4.98
+      "3Y": 4.09,
+      "5Y": 4.18
     },
     "1y_ago": {
       "1M": 4.33,
-      "2Y": 3.94,
       "3Y": 3.91,
-      "10Y": 4.46,
-      "20Y": 5.0
+      "5Y": 4.01
     },
     "2y_ago": {
       "1M": 5.48,
-      "2Y": 4.89,
       "3Y": 4.69,
-      "10Y": 4.51,
-      "20Y": 4.73
+      "5Y": 4.52
     },
     "benchmarks": {
-      "EUR": null,
+      "EUR": 2.9963,
       "GBP": 4.82,
       "CHF": 0.56
     }
