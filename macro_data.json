@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-19T21:16:46.061415Z",
+  "timestamp": "2026-06-19T22:14:44.202812Z",
   "macro_regime": {
     "inflation": {
       "value": 4.27,
@@ -1389,10 +1389,10 @@
       "value": 100.849,
       "signal": "neutral",
       "returns": {
-        "w1": 0.99,
-        "m1": 1.56,
+        "w1": 1.1,
+        "m1": 1.75,
         "ytd": 2.47,
-        "y1": 2.05
+        "y1": 1.96
       }
     }
   },
@@ -1429,7 +1429,7 @@
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 7.58,
+      "value": 8.66,
       "signal": "elevated",
       "unit": "%"
     }
