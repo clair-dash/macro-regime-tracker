@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-03T23:42:27.169964Z",
+  "timestamp": "2026-07-04T09:23:54.380005Z",
   "macro_regime": {
     "inflation": {
       "value": 4.27,
@@ -1423,7 +1423,7 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 15.8,
+      "value": 16.1,
       "signal": "low",
       "unit": ""
     },
