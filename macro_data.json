@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-13T16:31:55.910436Z",
+  "timestamp": "2026-08-13T17:31:53.961808Z",
   "macro_regime": {
     "inflation": {
       "value": 3.5398,
@@ -41,9 +41,16 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": null,
+      "value": 6.749,
       "direction": "stable",
-      "sparkline": [],
+      "sparkline": [
+        6.725,
+        6.736,
+        6.743,
+        6.747,
+        6.738,
+        6.749
+      ],
       "series": "Fed BS $T"
     },
     "real_yield": {
@@ -61,19 +68,19 @@
     }
   },
   "gold": {
-    "price_usd": 4411.6001,
-    "price_chf": 3588.4,
+    "price_usd": 4425.7998,
+    "price_chf": 3599.95,
     "returns": {
-      "w1": 4.0,
-      "m1": 9.09,
-      "ytd": 2.25,
-      "y1": 31.73
+      "w1": 4.33,
+      "m1": 9.44,
+      "ytd": 2.58,
+      "y1": 32.16
     },
     "returns_chf": {
-      "w1": 4.09,
-      "m1": 8.07,
-      "ytd": 4.64,
-      "y1": 32.07
+      "w1": 5.2,
+      "m1": 10.03,
+      "ytd": 5.35,
+      "y1": 32.41
     },
     "real_yield_history": [
       -1.1,
@@ -1375,16 +1382,16 @@
       4560.5,
       4022.8999,
       4049.1001,
-      4412.2002
+      4425.6001
     ],
     "dxy": {
-      "value": 99.983,
+      "value": 99.965,
       "signal": "supportive",
       "returns": {
-        "w1": 0.01,
-        "m1": -0.51,
-        "ytd": 1.59,
-        "y1": 1.92
+        "w1": -0.01,
+        "m1": -1.0,
+        "ytd": 1.57,
+        "y1": 1.59
       }
     }
   },
@@ -1403,8 +1410,8 @@
       "unit": "bp"
     },
     "ig_spread": {
-      "value": null,
-      "signal": "neutral",
+      "value": 1.0,
+      "signal": "low",
       "sparkline": [
         0.78,
         0.78,
@@ -1421,7 +1428,7 @@
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 10.17,
+      "value": 10.42,
       "signal": "elevated",
       "unit": "%"
     }
