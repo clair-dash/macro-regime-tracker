@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-14T17:07:26.412041Z",
+  "timestamp": "2026-08-14T18:02:46.926770Z",
   "macro_regime": {
     "inflation": {
       "value": 3.5398,
@@ -15,16 +15,9 @@
       "series": "CPI YoY %"
     },
     "pce": {
-      "value": 3.6681,
-      "direction": "accelerating",
-      "sparkline": [
-        2.8752,
-        2.8732,
-        3.5429,
-        3.7907,
-        4.079,
-        3.6681
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "PCE YoY %"
     },
     "liquidity": {
@@ -41,46 +34,32 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": 6.76,
+      "value": null,
       "direction": "stable",
-      "sparkline": [
-        6.736,
-        6.743,
-        6.747,
-        6.738,
-        6.749,
-        6.76
-      ],
+      "sparkline": [],
       "series": "Fed BS $T"
     },
     "real_yield": {
-      "value": 2.42,
-      "direction": "accelerating",
-      "sparkline": [
-        2.41,
-        2.43,
-        2.4,
-        2.43,
-        2.43,
-        2.42
-      ],
+      "value": null,
+      "direction": "stable",
+      "sparkline": [],
       "series": "TIPS 10Y %"
     }
   },
   "gold": {
-    "price_usd": 4442.3999,
-    "price_chf": 3612.12,
+    "price_usd": 4434.2002,
+    "price_chf": 3605.89,
     "returns": {
-      "w1": 2.34,
-      "m1": 11.46,
-      "ytd": 2.97,
-      "y1": 32.27
+      "w1": 2.15,
+      "m1": 11.26,
+      "ytd": 2.78,
+      "y1": 32.02
     },
     "returns_chf": {
-      "w1": 2.43,
-      "m1": 12.63,
-      "ytd": 5.7,
-      "y1": 33.41
+      "w1": 2.26,
+      "m1": 12.44,
+      "ytd": 5.53,
+      "y1": 33.18
     },
     "real_yield_history": [
       -1.1,
@@ -1383,16 +1362,16 @@
       4560.5,
       4022.8999,
       4049.1001,
-      4442.6001
+      4434.1001
     ],
     "dxy": {
-      "value": 99.627,
+      "value": 99.681,
       "signal": "supportive",
       "returns": {
-        "w1": 0.03,
-        "m1": -1.1,
-        "ytd": 1.23,
-        "y1": 1.83
+        "w1": 0.08,
+        "m1": -1.04,
+        "ytd": 1.28,
+        "y1": 1.88
       }
     }
   },
@@ -1424,7 +1403,7 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 14.4,
+      "value": 14.3,
       "signal": "low",
       "unit": ""
     },
