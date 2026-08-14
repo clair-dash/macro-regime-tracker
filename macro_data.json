@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-14T21:53:39.901114Z",
+  "timestamp": "2026-08-14T22:08:44.316884Z",
   "macro_regime": {
     "inflation": {
       "value": 3.5398,
@@ -1430,7 +1430,7 @@
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 10.05,
+      "value": 10.21,
       "signal": "elevated",
       "unit": "%"
     }
