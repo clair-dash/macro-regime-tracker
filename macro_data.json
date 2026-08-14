@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-14T18:02:46.926770Z",
+  "timestamp": "2026-08-14T19:02:44.187936Z",
   "macro_regime": {
     "inflation": {
       "value": 3.5398,
@@ -15,9 +15,16 @@
       "series": "CPI YoY %"
     },
     "pce": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 3.6681,
+      "direction": "accelerating",
+      "sparkline": [
+        2.8752,
+        2.8732,
+        3.5429,
+        3.7907,
+        4.079,
+        3.6681
+      ],
       "series": "PCE YoY %"
     },
     "liquidity": {
@@ -34,32 +41,46 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": null,
+      "value": 6.76,
       "direction": "stable",
-      "sparkline": [],
+      "sparkline": [
+        6.736,
+        6.743,
+        6.747,
+        6.738,
+        6.749,
+        6.76
+      ],
       "series": "Fed BS $T"
     },
     "real_yield": {
-      "value": null,
-      "direction": "stable",
-      "sparkline": [],
+      "value": 2.42,
+      "direction": "accelerating",
+      "sparkline": [
+        2.41,
+        2.43,
+        2.4,
+        2.43,
+        2.43,
+        2.42
+      ],
       "series": "TIPS 10Y %"
     }
   },
   "gold": {
-    "price_usd": 4434.2002,
-    "price_chf": 3605.89,
+    "price_usd": 4431.1001,
+    "price_chf": 3602.48,
     "returns": {
-      "w1": 2.15,
-      "m1": 11.26,
-      "ytd": 2.78,
-      "y1": 32.02
+      "w1": 2.08,
+      "m1": 11.18,
+      "ytd": 2.7,
+      "y1": 31.93
     },
     "returns_chf": {
-      "w1": 2.26,
-      "m1": 12.44,
-      "ytd": 5.53,
-      "y1": 33.18
+      "w1": 2.15,
+      "m1": 12.33,
+      "ytd": 5.42,
+      "y1": 33.05
     },
     "real_yield_history": [
       -1.1,
@@ -1362,16 +1383,16 @@
       4560.5,
       4022.8999,
       4049.1001,
-      4434.1001
+      4431.2998
     ],
     "dxy": {
-      "value": 99.681,
+      "value": 99.661,
       "signal": "supportive",
       "returns": {
-        "w1": 0.08,
-        "m1": -1.04,
-        "ytd": 1.28,
-        "y1": 1.88
+        "w1": 0.06,
+        "m1": -1.6,
+        "ytd": 1.26,
+        "y1": 1.51
       }
     }
   },
@@ -1408,7 +1429,7 @@
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 9.97,
+      "value": 10.18,
       "signal": "elevated",
       "unit": "%"
     }
