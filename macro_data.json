@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-21T19:22:32.726211Z",
+  "timestamp": "2026-08-21T19:43:13.396958Z",
   "macro_regime": {
     "inflation": {
       "value": 3.5398,
@@ -68,19 +68,19 @@
     }
   },
   "gold": {
-    "price_usd": 4679.0,
-    "price_chf": 3747.88,
+    "price_usd": 4675.5,
+    "price_chf": 3745.08,
     "returns": {
-      "w1": 6.82,
-      "m1": 15.63,
-      "ytd": 8.45,
-      "y1": 39.95
+      "w1": 6.74,
+      "m1": 15.54,
+      "ytd": 8.37,
+      "y1": 39.84
     },
     "returns_chf": {
-      "w1": 5.09,
-      "m1": 13.75,
-      "ytd": 9.67,
-      "y1": 38.77
+      "w1": 1.57,
+      "m1": 6.95,
+      "ytd": 5.44,
+      "y1": 34.68
     },
     "real_yield_history": [
       -1.02,
@@ -1383,10 +1383,10 @@
       4560.5,
       4022.8999,
       4049.1001,
-      4679.0
+      4675.7002
     ],
     "dxy": {
-      "value": 98.82,
+      "value": 98.824,
       "signal": "supportive",
       "returns": {
         "w1": -0.85,
@@ -1424,12 +1424,12 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 15.3,
+      "value": 15.2,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 8.23,
+      "value": 8.25,
       "signal": "elevated",
       "unit": "%"
     }
