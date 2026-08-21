@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-21T13:02:43.509157Z",
+  "timestamp": "2026-08-21T13:48:34.051789Z",
   "macro_regime": {
     "inflation": {
       "value": 3.5398,
@@ -41,9 +41,16 @@
       "series": "M2 YoY %"
     },
     "fed_bs": {
-      "value": null,
+      "value": 6.746,
       "direction": "stable",
-      "sparkline": [],
+      "sparkline": [
+        6.743,
+        6.747,
+        6.738,
+        6.749,
+        6.76,
+        6.746
+      ],
       "series": "Fed BS $T"
     },
     "real_yield": {
@@ -61,19 +68,19 @@
     }
   },
   "gold": {
-    "price_usd": 4636.8999,
-    "price_chf": 3708.59,
+    "price_usd": 4645.7002,
+    "price_chf": 3717.49,
     "returns": {
-      "w1": 5.86,
-      "m1": 14.59,
-      "ytd": 7.47,
-      "y1": 38.69
+      "w1": 6.06,
+      "m1": 14.81,
+      "ytd": 7.68,
+      "y1": 38.95
     },
     "returns_chf": {
-      "w1": 1.57,
-      "m1": 6.95,
-      "ytd": 5.44,
-      "y1": 34.68
+      "w1": 4.24,
+      "m1": 12.83,
+      "ytd": 8.79,
+      "y1": 37.65
     },
     "real_yield_history": [
       -1.02,
@@ -1376,23 +1383,23 @@
       4560.5,
       4022.8999,
       4049.1001,
-      4636.6001
+      4645.2002
     ],
     "dxy": {
-      "value": 98.743,
+      "value": 98.786,
       "signal": "supportive",
       "returns": {
-        "w1": -0.93,
-        "m1": -2.65,
-        "ytd": 0.33,
-        "y1": 0.53
+        "w1": -0.89,
+        "m1": -2.61,
+        "ytd": 0.37,
+        "y1": 0.58
       }
     }
   },
   "deployment_radar": {
     "hy_spread": {
-      "value": null,
-      "signal": "neutral",
+      "value": 3.0,
+      "signal": "low",
       "sparkline": [
         2.71,
         2.71,
@@ -1404,8 +1411,8 @@
       "unit": "bp"
     },
     "ig_spread": {
-      "value": null,
-      "signal": "neutral",
+      "value": 1.0,
+      "signal": "low",
       "sparkline": [
         0.79,
         0.79,
@@ -1417,12 +1424,12 @@
       "unit": "bp"
     },
     "vix": {
-      "value": 15.4,
+      "value": 15.5,
       "signal": "low",
       "unit": ""
     },
     "spx_vs_200ma": {
-      "value": 7.75,
+      "value": 8.08,
       "signal": "elevated",
       "unit": "%"
     }
